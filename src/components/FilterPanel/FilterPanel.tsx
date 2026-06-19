@@ -17,7 +17,7 @@ import {
 } from '../../types/candidate'
 import { Button } from '../ui/Button/Button'
 import { SearchBar } from '../SearchBar/SearchBar'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 const SORT_OPTIONS: Array<{
 	value: string
@@ -69,6 +69,11 @@ export function FilterPanel() {
 	const [searchKey, setSearchKey] = useState(0)
 	const currentSortValue = `${filters.sortField}-${filters.sortDirection}`
 
+	const handleSearch = useCallback(
+		(value: string) => dispatch(setSearch(value)),
+		[dispatch],
+	)
+
 	function handleReset() {
 		dispatch(resetFilters())
 		setSearchKey(k => k + 1) // remount SearchBar → инпут очищается
@@ -78,7 +83,7 @@ export function FilterPanel() {
 		<div className='flex flex-col md:flex-row md:items-center md:justify-between gap-3'>
 			<div className='flex flex-col sm:flex-row gap-3 flex-1'>
 				<div className='sm:w-64'>
-					<SearchBar key={searchKey} onSearch={v => dispatch(setSearch(v))} />
+					<SearchBar key={searchKey} onSearch={handleSearch} />
 				</div>
 
 				<select

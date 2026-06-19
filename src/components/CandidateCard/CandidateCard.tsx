@@ -1,27 +1,20 @@
 // src/components/CandidateCard/CandidateCard.tsx
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import type { Candidate } from '../../types/candidate'
 import { StatusBadge } from '../StatusBadge/StatusBadge'
 import { VerdictBadge } from '../ui/VerdictBadge/VerdictBadge'
+import { formatDate } from '../../utils/helpers'
 
 interface CandidateCardProps {
 	candidate: Candidate
 }
 
-function formatDate(iso: string): string {
-	return new Date(iso).toLocaleString('ru-RU', {
-		day: '2-digit',
-		month: '2-digit',
-		year: 'numeric',
-		hour: '2-digit',
-		minute: '2-digit',
-	})
-}
-
 export function CandidateCard({ candidate }: CandidateCardProps) {
+	const location = useLocation()
 	return (
 		<Link
 			to={`/candidate/${candidate.id}`}
+			state={{ from: `${location.pathname}${location.search}` }}
 			className='block px-3 py-3 hover:bg-background transition-colors'
 		>
 			<div className='flex lg:hidden items-start gap-3'>

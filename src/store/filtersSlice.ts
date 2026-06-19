@@ -25,6 +25,7 @@ const filtersSlice = createSlice({
 	initialState,
 	reducers: {
 		setSearch: (state, action: PayloadAction<string>) => {
+			if (state.search === action.payload) return
 			state.search = action.payload
 			state.page = 1
 		},
