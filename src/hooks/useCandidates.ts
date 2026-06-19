@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '../store'
 import {
-	fetchCandidatesThunk,
 	selectAllCandidates,
 	selectCandidatesError,
-	selectCandidatesLoadStatus,
 } from '../store/candidatesSlice'
 import {
 	DEFAULT_PAGE_SIZE,
@@ -17,21 +15,14 @@ import {
 	sortCandidates,
 } from '../utils/helpers'
 import type { DataSource } from '../services/mockData'
+import { useCandidatesLoaded } from './useCandidateLoaded'
 
 export function useCandidates(source: DataSource = 'default') {
 	const dispatch = useAppDispatch()
 	const items = useAppSelector(selectAllCandidates)
-	const loadStatus = useAppSelector(selectCandidatesLoadStatus)
+	const loadStatus = useCandidatesLoaded(source)
 	const error = useAppSelector(selectCandidatesError)
 	const filters = useAppSelector(selectFilters)
-	const hasFetched = useRef(false)
-
-
-	useEffect(() => {
-		if (hasFetched.current) return
-		hasFetched.current = true
-		dispatch(fetchCandidatesThunk(source))
-	}, [ dispatch, source])
 
 	const filtered = useMemo(
 		() =>
@@ -57,10 +48,11 @@ export function useCandidates(source: DataSource = 'default') {
 	)
 
 	useEffect(() => {
+		if (loadStatus !== 'succeeded') return
 		if (filters.page > totalPages) {
 			dispatch(setPage(totalPages))
 		}
-	}, [filters.page, totalPages, dispatch])
+	}, [filters.page, totalPages, dispatch, loadStatus])
 
 	return {
 		candidates: paginated,
