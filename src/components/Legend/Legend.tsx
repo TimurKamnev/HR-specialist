@@ -40,7 +40,7 @@ export default function Legend() {
 			</div>
 			<div className='bg-white flex-1 lg:flex-0 border border-border rounded-lg p-3 md:p-5 mt-4'>
 				<h2 className='text-base md:text-lg font-bold mb-5'>
-					Вердикт (цветовая индикация)
+					Вердикт
 				</h2>
 				<ul className='flex flex-col gap-3'>
 					<li className='grid grid-cols-2 gap-2'>

@@ -21,7 +21,7 @@ export function ContactCard({ candidate }: { candidate: Candidate }) {
 				)}
 				<li className='flex items-center gap-2'>
 					<span aria-hidden='true'>📍</span>
-					{candidate.city}
+					{candidate.city ?? 'Не указан'}
 				</li>
 				<li className='flex items-center gap-2'>
 					<span aria-hidden='true'>✈️</span>
