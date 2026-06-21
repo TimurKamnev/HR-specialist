@@ -4,35 +4,10 @@ import {
 	parseExperienceYears,
 	sortCandidates,
 } from './helpers'
-import type { Candidate } from '../types/candidate'
-
-function makeCandidate(overrides: Partial<Candidate>): Candidate {
-	return {
-		id: 'test-id',
-		name: 'Тестов Тест Тестович',
-		position: 'react-middle',
-		pos_label: 'React Middle',
-		email: 'test@email.com',
-		phone: '+996 000 000-000',
-		city: 'Бишкек',
-		tg: '@test',
-		exp: [['2022-01 — н.в.', 'Company', 'Role', '1 г.']],
-		total_exp: '~1 г.',
-		stack: 'React',
-		edu: 'Тест, 2020',
-		verdict: 'ПОДХОДИТ',
-		vc: 'verdict-green',
-		criteria: [],
-		summary: '',
-		questions: [],
-		status: 'new',
-		createdAt: '2026-01-01T00:00:00Z',
-		...overrides,
-	}
-}
+import { makeCandidate } from '../test/factories'
 
 describe('filterCandidates', () => {
-	const candidates: Candidate[] = [
+	const candidates = [
 		makeCandidate({
 			id: '1',
 			name: 'Иванов Иван Иванович',
@@ -146,7 +121,7 @@ describe('parseExperienceYears', () => {
 })
 
 describe('sortCandidates', () => {
-	const candidates: Candidate[] = [
+	const candidates = [
 		makeCandidate({
 			id: '1',
 			name: 'Б Кандидат',

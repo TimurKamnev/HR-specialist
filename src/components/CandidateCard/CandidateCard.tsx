@@ -15,6 +15,7 @@ export function CandidateCard({ candidate }: CandidateCardProps) {
 		<Link
 			to={`/candidate/${candidate.id}`}
 			state={{ from: `${location.pathname}${location.search}` }}
+			data-testid={`candidate-card-${candidate.id}`}
 			className='block px-3 py-3 hover:bg-background transition-colors'
 		>
 			<div className='flex lg:hidden items-start gap-3'>

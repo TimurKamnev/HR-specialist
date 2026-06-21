@@ -4,12 +4,15 @@ import type { TypedUseSelectorHook } from 'react-redux'
 import { candidatesReducer } from './candidatesSlice'
 import { filtersReducer } from './filtersSlice'
 
-export const store = configureStore({
-	reducer: {
-		candidates: candidatesReducer,
-		filters: filtersReducer,
-	},
-})
+export function createAppStore() {
+	return configureStore({
+		reducer: {
+			candidates: candidatesReducer,
+			filters: filtersReducer,
+		},
+	})
+}
+export const store = createAppStore()
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
