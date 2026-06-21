@@ -6,7 +6,7 @@ export default function CandidatesPage() {
 	useUrlFilters()
 
 	return (
-		<div className='flex gap-4 bg-background p-4 h-screen'>
+		<div className='flex flex-col-reverse lg:flex-row gap-4 bg-background p-4 h-screen'>
 			<Dashboard />
 			<Legend />
 		</div>

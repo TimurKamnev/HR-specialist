@@ -1,20 +1,25 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { useDispatch, useSelector } from 'react-redux'
 import type { TypedUseSelectorHook } from 'react-redux'
 import { candidatesReducer } from './candidatesSlice'
 import { filtersReducer } from './filtersSlice'
 
-export function createAppStore() {
+const rootReducer = combineReducers({
+	candidates: candidatesReducer,
+	filters: filtersReducer,
+})
+
+export type RootState = ReturnType<typeof rootReducer>
+
+export function createAppStore(preloadedState?: Partial<RootState>) {
 	return configureStore({
-		reducer: {
-			candidates: candidatesReducer,
-			filters: filtersReducer,
-		},
+		reducer: rootReducer,
+		preloadedState,
 	})
 }
+
 export const store = createAppStore()
 
-export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
 
 export const useAppDispatch = () => useDispatch<AppDispatch>()

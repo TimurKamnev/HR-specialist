@@ -1,8 +1,7 @@
-
 export default function Legend() {
 	return (
-		<aside className='hidden lg:flex flex-col gap-3 max-w-1/3'>
-			<div className='bg-white border border-border rounded-lg p-5'>
+		<aside className='flex flex-wrap lg:flex-col gap-3 max-w-full lg:max-w-1/3'>
+			<div className='bg-white flex-1 lg:flex-0 border border-border rounded-lg p-5'>
 				<h2 className='text-lg font-bold mb-5'>Статусы</h2>
 				<ul className='flex flex-col gap-3'>
 					<li className='grid grid-cols-2'>
@@ -31,7 +30,7 @@ export default function Legend() {
 					</li>
 				</ul>
 			</div>
-			<div className='bg-white border border-border rounded-lg p-5'>
+			<div className='bg-white flex-1 lg:flex-0 border border-border rounded-lg p-5'>
 				<h2 className='text-lg font-bold mb-5'>Вердикт (цветовая индикация)</h2>
 				<ul className='flex flex-col gap-3'>
 					<li className='grid grid-cols-2'>
