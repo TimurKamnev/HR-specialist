@@ -2,7 +2,7 @@ import type { Candidate } from '../../types/candidate'
 
 export function ContactCard({ candidate }: { candidate: Candidate }) {
 	return (
-		<div className='bg-white border border-border rounded-lg p-5'>
+		<div className='bg-white'>
 			<h2 className='text-lg font-bold mb-4'>Контакты</h2>
 			<ul className='flex flex-col gap-3 text-sm'>
 				<li className='flex items-center gap-2'>

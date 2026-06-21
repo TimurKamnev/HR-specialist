@@ -1,9 +1,12 @@
 import { Outlet } from 'react-router'
 import { ToastProvider } from './components/ui/Toast/Toast'
 import { useCandidatesLoaded } from './hooks/useCandidateLoaded'
+import { getStoredDataSource } from './utils/dataSourcePerormance'
+
+const initialDataSource = getStoredDataSource()
 
 function App() {
-	useCandidatesLoaded()
+	useCandidatesLoaded(initialDataSource)
 
 	return (
 		<ToastProvider>

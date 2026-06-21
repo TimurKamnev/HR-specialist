@@ -18,6 +18,7 @@ import {
 import { Button } from '../ui/Button/Button'
 import { SearchBar } from '../SearchBar/SearchBar'
 import { useCallback, useState } from 'react'
+import Popover from '../ui/Popover/Popover'
 
 const SORT_OPTIONS: Array<{
 	value: string
@@ -81,46 +82,69 @@ export function FilterPanel() {
 
 	return (
 		<div className='flex flex-col md:flex-row md:items-center md:justify-between gap-3'>
-			<div className='flex flex-col sm:flex-row gap-3 flex-1'>
-				<div className='sm:w-64'>
+			<div className='flex items-center gap-3 flex-1'>
+				<div className='sm:w-80'>
 					<SearchBar key={searchKey} onSearch={handleSearch} />
 				</div>
 
-				<select
-					value={filters.status}
-					onChange={e => dispatch(setStatus(e.target.value as StatusFilter))}
-					className='border border-border rounded-lg py-2 px-3'
-					aria-label='Фильтр по статусу'
+				<Popover
+					trigger={({ ref, onClick }) => (
+						<button ref={ref} onClick={onClick} className='cursor-pointer'>
+							<svg
+								xmlns='http://www.w3.org/2000/svg'
+								fill='none'
+								viewBox='0 0 24 24'
+								strokeWidth='1.5'
+								stroke='currentColor'
+								className='size-6'
+							>
+								<path
+									strokeLinecap='round'
+									strokeLinejoin='round'
+									d='M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z'
+								/>
+							</svg>
+						</button>
+					)}
 				>
-					<option value='all'>Все статусы</option>
-					{Object.entries(STATUS_LABELS).map(([value, label]) => (
-						<option key={value} value={value}>
-							{label}
-						</option>
-					))}
-				</select>
+					<select
+						value={filters.status}
+						onChange={e => dispatch(setStatus(e.target.value as StatusFilter))}
+						className='border border-border rounded-lg py-2 px-3'
+						aria-label='Фильтр по статусу'
+					>
+						<option value='all'>Все статусы</option>
+						{Object.entries(STATUS_LABELS).map(([value, label]) => (
+							<option key={value} value={value}>
+								{label}
+							</option>
+						))}
+					</select>
 
-				<select
-					value={filters.verdict}
-					onChange={e => dispatch(setVerdict(e.target.value as VerdictFilter))}
-					className='border border-border rounded-lg py-2 px-3'
-					aria-label='Фильтр по вердикту'
-				>
-					<option value='all'>Все вердикты</option>
-					{Object.entries(VERDICT_LABELS).map(([value, label]) => (
-						<option key={value} value={value}>
-							{label}
-						</option>
-					))}
-				</select>
+					<select
+						value={filters.verdict}
+						onChange={e =>
+							dispatch(setVerdict(e.target.value as VerdictFilter))
+						}
+						className='border border-border rounded-lg py-2 px-3'
+						aria-label='Фильтр по вердикту'
+					>
+						<option value='all'>Все вердикты</option>
+						{Object.entries(VERDICT_LABELS).map(([value, label]) => (
+							<option key={value} value={value}>
+								{label}
+							</option>
+						))}
+					</select>
 
-				<Button
-					variant='secondary'
-					className='border border-border bg-white'
-					onClick={handleReset}
-				>
-					Сбросить
-				</Button>
+					<Button
+						variant='secondary'
+						className='border border-border bg-white'
+						onClick={handleReset}
+					>
+						Сбросить
+					</Button>
+				</Popover>
 			</div>
 
 			<select

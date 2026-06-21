@@ -9,11 +9,7 @@ import {
 	selectFilters,
 	setPage,
 } from '../store/filtersSlice'
-import {
-	filterCandidates,
-	paginateCandidates,
-	sortCandidates,
-} from '../utils/helpers'
+import { filterCandidates, sortCandidates } from '../utils/helpers'
 import type { DataSource } from '../services/mockData'
 import { useCandidatesLoaded } from './useCandidateLoaded'
 
@@ -42,11 +38,6 @@ export function useCandidates(source: DataSource = 'default') {
 	const totalCount = sorted.length
 	const totalPages = Math.max(1, Math.ceil(totalCount / DEFAULT_PAGE_SIZE))
 
-	const paginated = useMemo(
-		() => paginateCandidates(sorted, filters.page, DEFAULT_PAGE_SIZE),
-		[sorted, filters.page],
-	)
-
 	useEffect(() => {
 		if (loadStatus !== 'succeeded') return
 		if (filters.page > totalPages) {
@@ -55,7 +46,7 @@ export function useCandidates(source: DataSource = 'default') {
 	}, [filters.page, totalPages, dispatch, loadStatus])
 
 	return {
-		candidates: paginated,
+		candidates: sorted,
 		totalCount,
 		totalPages,
 		loadStatus,

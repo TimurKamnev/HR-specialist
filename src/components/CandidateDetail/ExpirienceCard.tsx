@@ -3,7 +3,7 @@ import type { Candidate } from '../../types/candidate'
 
 export function ExperienceCard({ exp }: { exp: Candidate['exp'] }) {
 	return (
-		<div className='bg-white border border-border rounded-lg p-5'>
+		<div className='bg-white border border-border rounded-lg p-4'>
 			<h2 className='text-lg font-bold mb-4'>Опыт работы</h2>
 			<ol className='flex flex-col gap-4'>
 				{exp.map(([period, company, role, duration], i) => (

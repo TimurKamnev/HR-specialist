@@ -11,7 +11,7 @@ const CRITERIA_STYLES: Record<
 
 export function CriteriaCard({ criteria }: { criteria: CriteriaItem[] }) {
 	return (
-		<div className='bg-white border border-border rounded-lg p-5'>
+		<div className='bg-white border border-border rounded-lg p-4'>
 			<h2 className='text-lg font-bold mb-4'>Критерии оценки</h2>
 			<ul className='flex flex-col gap-3'>
 				{criteria.map(([level, text], i) => {

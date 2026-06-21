@@ -55,28 +55,31 @@ export default function CandidateDetailPage() {
 				← Назад к списку
 			</Link>
 
-			<header className='bg-white border border-border rounded-lg p-5 mb-4 flex flex-wrap items-start justify-between gap-4'>
-				<div>
+			<header className='bg-white border border-border rounded-lg p-5 mb-2 flex flex-wrap items-start justify-between gap-6'>
+				<div className='flex flex-col gap-4 flex-1 lg:flex-0'>
+					<ContactCard candidate={candidate} />
+				</div>
+				<div className='border-y border-y-border lg:border-none py-3'>
 					<div className='flex items-center gap-3 flex-wrap'>
-						<h1 className='text-2xl font-bold'>{candidate.name}</h1>
+						<h1 className='text-2xl font-bold mb-2'>{candidate.name}</h1>
 						<StatusBadge status={candidate.status} />
 					</div>
 					<p className='text-text-muted'>{candidate.pos_label}</p>
-					<dl className='flex flex-wrap gap-6 mt-4 text-sm'>
+					<dl className='flex flex-wrap gap-8 mt-4 text-sm'>
 						<div>
-							<dt className='text-text-muted'>Опыт работы</dt>
+							<dt className='text-text-muted mb-2'>Опыт работы</dt>
 							<dd className='font-medium'>{candidate.total_exp}</dd>
 						</div>
 						<div>
-							<dt className='text-text-muted'>Город</dt>
+							<dt className='text-text-muted mb-2'>Город</dt>
 							<dd className='font-medium'>{candidate.city}</dd>
 						</div>
 						<div>
-							<dt className='text-text-muted'>Добавлен</dt>
+							<dt className='text-text-muted mb-2'>Добавлен</dt>
 							<dd className='font-medium'>{formatDate(candidate.createdAt)}</dd>
 						</div>
 						<div>
-							<dt className='text-text-muted'>Вердикт</dt>
+							<dt className='text-text-muted mb-2'>Вердикт</dt>
 							<dd>
 								<VerdictBadge verdict={candidate.verdict} />
 							</dd>
@@ -92,19 +95,16 @@ export default function CandidateDetailPage() {
 			</header>
 
 			<div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
-				<div className='flex flex-col gap-4'>
-					<ContactCard candidate={candidate} />
-				</div>
-				<div className='flex flex-col gap-4'>
+				<div className='flex flex-col gap-2'>
 					<ExperienceCard exp={candidate.exp} />
-					<StackCard stack={candidate.stack} />
 					<EducationCard edu={candidate.edu} />
-					<SummaryCard summary={candidate.summary} />
 				</div>
-				<div className='flex flex-col gap-4'>
-					<CriteriaCard criteria={candidate.criteria} />
+				<div className='flex flex-col gap-2'>
+					<StackCard stack={candidate.stack} />
+					<SummaryCard summary={candidate.summary} />
 					<QuestionCard questions={candidate.questions} />
 				</div>
+				<CriteriaCard criteria={candidate.criteria} />
 			</div>
 		</div>
 	)

@@ -5,7 +5,7 @@ export function StackCard({ stack }: { stack: string }) {
 		.filter(Boolean)
 
 	return (
-		<div className='bg-white border border-border rounded-lg p-5'>
+		<div className='bg-white border border-border rounded-lg p-4'>
 			<h2 className='text-lg font-bold mb-4'>Стек технологий</h2>
 			<div className='flex flex-wrap gap-2'>
 				{items.map(item => (
