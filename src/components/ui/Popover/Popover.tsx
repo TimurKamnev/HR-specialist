@@ -44,8 +44,8 @@ export default function Popover({
 				ref={popoverRef}
 				data-state={open ? 'open' : 'closed'}
 				className='
-					absolute top-8 left-0 z-50 flex flex-col
-					w-72 p-4 bg-white border rounded-lg shadow
+					absolute top-8 right-0 md:left-0 z-50 flex flex-col
+					w-52 md:w-72 p-4 bg-white border border-border rounded-lg shadow
 					origin-top-left transition-all duration-200 gap-3
 
 					data-[state=open]:opacity-100

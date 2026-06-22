@@ -60,12 +60,12 @@ export default function CandidateDetailPage() {
 					<ContactCard candidate={candidate} />
 				</div>
 				<div className='border-y border-y-border lg:border-none py-3'>
-					<div className='flex items-center gap-3 flex-wrap'>
+					<div className='flex items-center sm:gap-3 flex-wrap mb-4'>
 						<h1 className='text-2xl font-bold mb-2'>{candidate.name}</h1>
 						<StatusBadge status={candidate.status} />
 					</div>
 					<p className='text-text-muted'>{candidate.pos_label}</p>
-					<dl className='flex flex-wrap gap-8 mt-4 text-sm'>
+					<dl className='flex flex-wrap gap-4 md:gap-8 mt-4 text-sm'>
 						<div className='flex items-start gap-3'>
 							<span className='bg-gray-100 p-2 rounded-xl'>
 								<svg

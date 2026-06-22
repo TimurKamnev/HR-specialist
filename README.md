@@ -1,73 +1,73 @@
-# React + TypeScript + Vite
+# Candidate Dashboard — CV-Scan
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Модуль для HR-специалиста: список кандидатов с фильтрацией/поиском/сортировкой, детальная карточка с критериями оценки и вопросами для интервью, управление статусом обработки резюме с optimistic update, и оптимизация рендера большого списка через виртуализацию.
 
-Currently, two official plugins are available:
+## Стек
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React 19 + TypeScript**
+- **Vite** — сборка
+- **Redux Toolkit** + **react-redux** — состояние (кандидаты, фильтры)
+- **react-router v8** — роутинг (без отдельного `react-router-dom`, начиная с v7 функциональность объединена в один пакет)
+- **Tailwind CSS v4**
+- **Vitest + React Testing Library** — тесты (см. ниже, почему не Jest)
+- **react-window** — виртуализация списка (задание 5)
 
-## React Compiler
+## Запуск
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run test       # vitest run, 38 тестов
+npm run build       # tsc -b && vite build
+npm run lint
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Как это работает
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Список и фильтры
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Фильтры (поиск, вердикт, статус, сортировка, страница) живут в отдельном Redux-слайсе (`filtersSlice`) и **двунаправленно синхронизированы с query-параметрами URL** через хук `useUrlFilters` — можно скопировать ссылку с активными фильтрами и переслать коллеге, он увидит то же самое. Поиск задебаунсен на 300мс на уровне отдельного `SearchBar`, который сам управляет вводом локально и наружу отдаёт значение только через debounce — это исключает лишние ререндеры/диспатчи на каждое нажатие клавиши.
+
+Фильтрация и сортировка вынесены в чистые функции (`utils/helpers.ts`) и мемоизированы через `useMemo` в хуке `useCandidates` — пересчёт идёт только если реально изменились исходные данные или конкретные поля фильтра (не весь объект фильтров целиком, чтобы смена страницы не триггерила пересчёт фильтрации).
+
+### Детальная карточка и статусы
+
+Смена статуса (`Новый → На рассмотрении → Приглашён → Отклонён`) сделана с **optimistic update**: UI обновляется мгновенно при выборе нового статуса, запрос (имитация `PATCH`) уходит в фоне. Если он завершается ошибкой (в моке заложен ~15% шанс отказа специально, чтобы рефлекс rollback было видно при обычном тестировании руками) — статус откатывается на исходный, и пользователь видит error-тост. Исходный статус для rollback запоминается **внутри Redux-редьюсера** в момент `pending`-экшена (до мутации), а не вычисляется отдельно внутри thunk — иначе по факту работы `createAsyncThunk` thunk видел бы уже изменённое состояние и откатывал бы кандидата на тот же статус, на который только что переключились (это реальный баг, который ловится только при тестировании, см. покрытие тестами ниже).
+
+«Назад к списку» сохраняет фильтры через `state` объекта `Link` (а не через историю браузера) — клик на кандидата кладёт текущий URL со всеми параметрами в `location.state`, и кнопка назад возвращает именно туда.
+
+### Виртуализация (задание 5)
+
+Сделано не формально, а содержательно: список **не режется на страницы массивом** — `useCandidates` отдаёт весь отфильтрованный/отсортированный список, а `CandidateList` рендерит его через `FixedSizeList` из `react-window`. «Страница» — это позиция скролла, а не срез массива: клик по номеру страницы скроллит виртуализированный список к нужному индексу (`scrollToItem`). Снаружи выглядит как обычная пагинация (12 страниц по 10 для большого мока), но в DOM в любой момент существует только ~10-15 строк, а не все 120 — реальный выигрыш в производительности, а не косметика.
+
+Кнопка в шапке списка переключает источник данных (`candidates.json` ↔ `candidates-large.json`), выбор сохраняется в `localStorage` и переживает перезагрузку страницы.
+
+`CandidateCard` и строки списка обёрнуты в `React.memo`; измерение высоты контейнера для `FixedSizeList` сделано через `ResizeObserver` с cleanup в `useEffect` (отключение observer'а при анмаунте).
+
+### Тесты
+
+Выбран **Vitest вместо Jest**, указанного в `TASK.md` — для проекта на Vite это естественнее (общая конфигурация трансформации кода, без отдельной настройки babel/ts-jest), API тестов идентичен (`describe`/`it`/`expect`), RTL используется тот же.
+
+Покрыто:
+- `filterCandidates` / `sortCandidates` / `parseExperienceYears` — фильтрация, сортировка, парсинг опыта из строки
+- `useDebounce` — через `vi.useFakeTimers`, включая сценарий быстрого ввода (промежуточные значения не должны "проскакивать")
+- `VerdictBadge` / `StatusBadge` — корректность цветовых классов для каждого значения enum
+- `Pagination` — граничные случаи (первая/последняя страница, disabled-кнопки)
+- `StatusSelect` — optimistic update, rollback при ошибке, loading state (disabled select во время запроса)
+- integration-тест: переход список → детальная страница, 404 на несуществующего кандидата, сохранение фильтров при возврате назад
+
+Сетевой слой (`services/api.ts`) мокается целиком (`vi.mock`) — тесты не зависят от реальной задержки/случайности мока.
+
+## Архитектурные решения и компромиссы
+
+- **Данные в моках не на 100% совпадают с примером из `TASK.md`** — реальный `candidates.json` использует значения `"НЕ СООТВЕТСТВУЕТ"` вместо `"НЕ ПОДХОДИТ"` для вердикта, короткие коды статусов (`new`/`review`/`rejected`), и явно содержит `status`/`createdAt` (в спеке они не упомянуты). Типы и логика фильтрации ориентированы на реальные данные, а не на текст задания.
+- **Значение статуса "Приглашён"** (`invited`) — не было примера в исходных данных с этим статусом, использовано по аналогии с остальными короткими английскими кодами.
+- **Тосты** — простой собственный `Context` (`ToastProvider`/`useToast`), без внешней библиотеки. Решение сознательное: задача небольшая (success/error с автозакрытием), сторонняя зависимость избыточна.
+- **Структура поменялась относительно черновика в `TASK.md`** — некоторые компоненты названы иначе (`Legend` вместо `CardInfo`, например), часть хуков/утилит добавлена сверх исходного списка (`useUrlFilters`, `useElementHeight`, `useCandidatesLoaded`, `dataSourcePreference`). Контракт между слоями (types → services → store → hooks → components) сохранён, имена адаптированы по ходу разработки.
+
+## Что не успели / сознательно не делали
+
+- **Декоративные элементы из референс-мокапа** (боковой сайдбар с навигацией "Вакансии/Аналитика/Настройки", кнопка "Добавить кандидата", профиль HR-менеджера) — не входят в `TASK.md`, не несут функциональности, оставлены за рамками сдачи.
+- **Автообновление номера страницы при ручном скролле** списка — рассматривали, но отказались: синхронизация "скролл → номер страницы" и "номер страницы → скролл" друг в друга требует пары защитных флагов от зацикливания, и для текущего объёма задания решили, что однонаправленного потока (клик по странице → скролл) достаточно.
+- Тесты не покрывают каждый UI-компонент по отдельности (`Button`, `Avatar`, `FilterPanel` целиком) — покрыта ключевая логика по чек-листу задания 4 плюс несколько компонентов сверху (`Pagination`, `StatusSelect`); остальное косвенно проверяется integration-тестом.
+- Полного a11y-аудита не было — точечные `aria-label`/`role`/`aria-current` расставлены по ключевым интерактивным элементам, но не проверялось через скринридер или axe.
